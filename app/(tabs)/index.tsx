@@ -1,74 +1,118 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import Searchbar from "@/components/Searchbar"
+import { Colors } from "@/constants/Colors"
+import { useEffect, useState } from "react"
+import { ActivityIndicator, ScrollView, StatusBar, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from "react-native"
+import axios from "axios"
+import { Center } from "native-base"
+import WordDay from "@/components/WordDay"
+import WordCard from "@/components/WordCard"
+import { Meanings } from "@/models/words"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import Ionicons from "@expo/vector-icons/Ionicons"
+const Index = () => {
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+    const { height, width } = useWindowDimensions()
+    const [isLoading, setIsLoading] = useState(false)
+    const [wordDay, setWordDay] = useState<string>("")
+    const [recommendWords, setRecommendWords] = useState<string[]>([])
+    const [meanings, setMeanings] = useState<Meanings[]>([])
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+    const handleSearch = (searchText: string) => {
+        console.log(searchText)
+    }
+
+    const fetchWordOfday = async () => {
+        setIsLoading(true)
+        try {
+            const { data } = await axios.get(`${process.env.EXPO_PUBLIC_RANDOM_WORD_API}?words=${1}`)
+            setWordDay(data[0])
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setIsLoading(false)
+        }
+    }
+    const fetchRecommedWords = async () => {
+        setIsLoading(true)
+        try {
+            const { data } = await axios.get(`${process.env.EXPO_PUBLIC_RANDOM_WORD_API}?words=${10}`)
+            setRecommendWords(data)
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const getWordDefinition = async (word: string) => {
+        setIsLoading(true)
+        try {
+            const { data } = await axios.get(`${process.env.EXPO_PUBLIC_WORDAPI}/${word}`)
+            if (data.length > 0) {
+                setMeanings(data[0].meanings)
+            }
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setIsLoading(false)
+        }
+    }
+    useEffect(() => {
+        fetchWordOfday()
+        fetchRecommedWords()
+    }, [])
+
+    useEffect(() => {
+        if (wordDay) {
+            getWordDefinition(wordDay)
+        }
+    }, [wordDay])
+
+    return (
+        <View className="flex-1 bg-white ">
+            <StatusBar backgroundColor={Colors.light.tabIconSelected} barStyle={"light-content"} />
+            <View
+                style={{ height: height / 6, backgroundColor: Colors.light.tabIconSelected }}
+                className="px-6 py-6 flex items-center gap-4 "
+            >
+                <Text className="text-center text-2xl font-semibold text-white">Home</Text>
+                <Searchbar searchText={handleSearch} />
+            </View>
+
+            <View className="pt-8 pb-4 px-6 flex-1" style={{ backgroundColor: Colors.light.background }}>
+                {
+                    isLoading ? <Center>
+                        <ActivityIndicator />
+                    </Center> :
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            <WordDay wordOfDay={wordDay} meanings={meanings} />
+                            <WordCard recommendedWords={recommendWords} />
+                        </ScrollView>
+                }
+            </View>
+
+            <TouchableOpacity
+                onPress={() => fetchWordOfday()}
+                style={{
+                    position: "absolute",
+                    bottom: 20,
+                    left: width * 0.5 - (width * 0.3) / 2,
+                    backgroundColor: Colors.light.tabIconSelected,
+                    borderRadius: 20,
+                    width: width * 0.3,
+                    height: 40,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                    elevation: 5,
+                }}
+            >
+                <Text className="text-white text-center font-semibold">New Word</Text>
+            </TouchableOpacity>
+        </View>
+    )
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+export default Index
