@@ -1,50 +1,38 @@
-# Welcome to your Expo app 👋
+# DailyDigest
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Vocabulary is an application that provides you word of the day along with it's definition
 
-## Get started
+## Project Overview
 
-1. Install dependencies
+- Voacabulary is made using React Native Expo,it uses expo router for navigating between Pages
+- Word generator and definition api to get random words
+- React Native reanimated for smooth animations
+- Async Storage for storing words with date locally
 
-   ```bash
-   npm install
-   ```
+## Screenshots
 
-2. Start the app
+<img src="/assets/screenshots/home.jpeg" width="200" /> <img src="/assets/screenshots/home_with_saved.jpeg" width="200" />
 
-   ```bash
-    npx expo start
-   ```
+<img src="/assets/screenshots/history.jpeg" width="200" />
 
-In the output, you'll find options to open the app in a
+## Installation
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Make sure you have react native installed on your system
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+git clone https://github.com/RitikJha93/Daily-Digest.git
+```
+```
+cd daily-digest
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Setting environment variables
+```
+EXPO_PUBLIC_WORDAPI = https://api.dictionaryapi.dev/api/v2/entries/en
+EXPO_PUBLIC_RANDOM_WORD_API = https://random-word-api.vercel.app/api
+```
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Running server
+```
+npx expo start
+```
